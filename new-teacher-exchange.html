@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Teacher Exchange — Strategies, Systems &amp; Support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board:#EEF2F3; --board-line:#D7DEE1; --ink:#20262B; --ink-soft:#5B6570;
+    --yellow:#F6C453; --yellow-d:#B98A1E;
+    --coral:#FF6B5B; --coral-d:#B33F32;
+    --teal:#33B1A6; --teal-d:#1F7F77;
+    --violet:#8C7AE6; --violet-d:#5C4BB0;
+    --sky:#4EA8DE; --sky-d:#2C7DAE;
+    --rose:#E8598B; --rose-d:#B03864;
+    --paper:#FFFFFF;
+    --shadow:0 3px 0 rgba(32,38,43,0.14);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  .ws-root{
+    font-family:'Inter', sans-serif; color:var(--ink); background-color:var(--board);
+    background-image:radial-gradient(var(--board-line) 1.3px, transparent 1.3px);
+    background-size:22px 22px; min-height:100%;
+  }
+  .ws-topbar{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:18px 26px; flex-wrap:wrap;
+    background:rgba(238,242,243,0.92); backdrop-filter:blur(2px); border-bottom:2px solid var(--board-line); position:sticky; top:0; z-index:5; }
+  .ws-brand h1{ font-family:'Space Grotesk'; font-weight:700; font-size:20px; margin:0; }
+  .ws-brand p{ margin:2px 0 0; font-size:12px; font-weight:600; color:var(--ink-soft); }
+  .ws-nav{ display:flex; gap:8px; flex-wrap:wrap; }
+  .ws-tab{ font-family:'Inter'; font-weight:700; font-size:12.5px; padding:9px 14px; border-radius:999px; border:2px solid var(--ink); background:var(--paper); color:var(--ink); cursor:pointer; }
+  .ws-tab[aria-selected="true"]{ background:var(--ink); color:var(--board); }
+  .ws-tab:focus-visible{ outline:3px solid var(--violet); outline-offset:2px; }
+
+  main{ max-width:1000px; margin:0 auto; padding:26px 20px 60px; }
+  .hidden{ display:none !important; }
+
+  .intro-card{ background:var(--paper); border:2px solid var(--ink); border-radius:16px; padding:22px 24px; box-shadow:var(--shadow); margin-bottom:26px; }
+  .intro-card .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600; color:var(--violet-d); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 6px; }
+  .intro-card h2{ font-family:'Space Grotesk'; font-size:21px; margin:0 0 8px; }
+  .intro-card p{ margin:0 0 4px; font-weight:500; line-height:1.55; }
+  .intro-meta{ display:flex; gap:14px; flex-wrap:wrap; margin:14px 0 4px; }
+  .meta-pill{ font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600; background:var(--board); border:1.5px solid var(--board-line); border-radius:8px; padding:6px 10px; }
+  .fac-toggle{ font-family:'Inter'; font-weight:800; font-size:12.5px; border:none; background:var(--board); border-radius:8px; padding:7px 11px; cursor:pointer; margin-top:14px; }
+  .fac-note{ display:none; margin-top:12px; padding:12px 14px; background:var(--board); border-radius:10px; font-size:13.5px; font-weight:500; line-height:1.55; }
+  .fac-note.open{ display:block; }
+
+  /* ---- Workshop sticky cards (reuses pattern) ---- */
+  .segment-track{ display:flex; flex-direction:column; gap:30px; }
+  .sticky-card{ position:relative; border-radius:6px; padding:24px 24px 20px; box-shadow:0 10px 22px rgba(32,38,43,0.12); }
+  .sticky-card::before{ content:""; position:absolute; top:-10px; left:34px; width:22px; height:14px; border-radius:3px; background:rgba(32,38,43,0.18); }
+  .sticky-card.c-yellow{ background:var(--yellow); transform:rotate(-0.5deg); }
+  .sticky-card.c-coral{ background:var(--coral); color:#fff; transform:rotate(0.4deg); }
+  .sticky-card.c-teal{ background:var(--teal); color:#fff; transform:rotate(-0.4deg); }
+  .sticky-card.c-violet{ background:var(--violet); color:#fff; transform:rotate(0.5deg); }
+  .seg-head{ display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; align-items:flex-start; }
+  .seg-num{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:11.5px; opacity:0.75; text-transform:uppercase; letter-spacing:0.05em; }
+  .seg-title{ font-family:'Space Grotesk'; font-weight:700; font-size:21px; margin:4px 0 6px; }
+  .seg-purpose{ font-weight:600; font-size:13.5px; line-height:1.5; max-width:60ch; margin:0; opacity:0.92; }
+  .seg-dur{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:12.5px; background:rgba(255,255,255,0.55); border-radius:8px; padding:6px 10px; white-space:nowrap; }
+  .seg-body{ display:grid; grid-template-columns:1fr 170px; gap:20px; margin-top:16px; }
+  @media (max-width:640px){ .seg-body{ grid-template-columns:1fr; } }
+  .steps-toggle{ font-family:'Inter'; font-weight:800; font-size:12.5px; border:none; background:rgba(255,255,255,0.55); border-radius:8px; padding:7px 11px; cursor:pointer; margin-top:12px; }
+  .steps-list{ margin:12px 0 0; padding-left:19px; display:none; }
+  .steps-list.open{ display:block; }
+  .steps-list li{ margin-bottom:7px; font-weight:500; line-height:1.5; font-size:13.5px; }
+  .timer-widget{ display:flex; flex-direction:column; align-items:center; gap:7px; }
+  .timer-ring-wrap{ position:relative; width:104px; height:104px; }
+  .timer-ring-wrap svg{ width:100%; height:100%; transform:rotate(-90deg); }
+  .timer-track{ fill:none; stroke:rgba(255,255,255,0.4); stroke-width:7; }
+  .timer-fill{ fill:none; stroke:#fff; stroke-width:7; stroke-linecap:round; transition:stroke-dashoffset 0.3s linear; }
+  .timer-time{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:17px; color:#fff; }
+  .timer-btns{ display:flex; gap:6px; }
+  .timer-btn{ font-family:'Inter'; font-weight:800; font-size:10.5px; border:1.5px solid rgba(255,255,255,0.7); background:rgba(255,255,255,0.18); color:inherit; border-radius:7px; padding:5px 8px; cursor:pointer; }
+  .timer-btn:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+  .timer-done{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:11px; min-height:14px; }
+
+  /* ---- Documentation organizer ---- */
+  .doc-grid{ display:flex; flex-direction:column; gap:16px; }
+  .doc-card{ background:var(--paper); border:2px solid var(--board-line); border-radius:14px; padding:18px 20px; box-shadow:var(--shadow); border-left:8px solid var(--ink); }
+  .doc-card h3{ font-family:'Space Grotesk'; font-size:17px; margin:2px 0 6px; }
+  .doc-card p.doc-desc{ margin:0 0 12px; font-weight:500; font-size:13.5px; line-height:1.55; color:var(--ink-soft); }
+  .doc-habits{ margin:0 0 14px; padding-left:19px; }
+  .doc-habits li{ font-size:13px; font-weight:600; margin-bottom:4px; }
+  .doc-log-toggle{ font-family:'Inter'; font-weight:800; font-size:12.5px; border:2px solid var(--ink); background:var(--paper); border-radius:8px; padding:7px 12px; cursor:pointer; }
+  .doc-log{ display:none; margin-top:14px; padding-top:14px; border-top:1.5px dashed var(--board-line); }
+  .doc-log.open{ display:block; }
+  .doc-form{ display:grid; grid-template-columns:130px 1fr; gap:8px; margin-bottom:10px; }
+  @media (max-width:560px){ .doc-form{ grid-template-columns:1fr; } }
+  .doc-form input, .doc-form textarea{ font-family:'Inter'; font-size:13px; font-weight:600; padding:8px 10px; border:1.5px solid var(--board-line); border-radius:8px; background:var(--board); color:var(--ink); }
+  .doc-form textarea{ grid-column:1 / -1; min-height:54px; resize:vertical; font-weight:500; }
+  .doc-add-btn{ font-family:'Inter'; font-weight:800; font-size:12.5px; background:var(--ink); color:var(--board); border:none; border-radius:8px; padding:8px 14px; cursor:pointer; grid-column:1/-1; justify-self:start; }
+  .entry-list{ list-style:none; margin:10px 0 0; padding:0; }
+  .entry-item{ display:flex; gap:10px; padding:8px 0; border-bottom:1px solid var(--board-line); font-size:13px; }
+  .entry-date{ font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--ink-soft); flex-shrink:0; white-space:nowrap; }
+  .entry-body strong{ display:block; }
+  .entry-empty{ font-size:12.5px; font-weight:600; color:var(--ink-soft); padding:6px 0; }
+  .storage-note{ font-size:11.5px; font-weight:600; color:var(--ink-soft); margin-top:22px; text-align:center; }
+
+  /* ---- Intervention planner ---- */
+  .planner-card{ background:var(--paper); border:2px solid var(--ink); border-radius:16px; padding:24px; box-shadow:var(--shadow); }
+  .planner-card label.field-label{ display:block; font-weight:800; font-size:13px; margin:0 0 6px; }
+  .student-input{ width:100%; max-width:320px; padding:9px 12px; font-family:'Inter'; font-weight:600; font-size:13.5px; border:1.5px solid var(--board-line); border-radius:8px; background:var(--board); margin-bottom:22px; }
+  .q-block{ margin-bottom:22px; }
+  .q-title{ font-family:'Space Grotesk'; font-size:15.5px; font-weight:700; margin:0 0 10px; }
+  .opt-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .opt-btn{ font-family:'Inter'; font-weight:700; font-size:12.5px; padding:9px 13px; border-radius:10px; border:2px solid var(--board-line); background:var(--board); cursor:pointer; }
+  .opt-btn[aria-pressed="true"]{ background:var(--violet); border-color:var(--violet-d); color:#fff; }
+  .opt-btn:focus-visible{ outline:3px solid var(--sky); outline-offset:2px; }
+  .planner-cta{ font-family:'Space Grotesk'; font-weight:700; font-size:15px; background:var(--ink); color:var(--board); border:none; border-radius:12px; padding:12px 22px; cursor:pointer; }
+  .planner-cta:disabled{ opacity:0.4; cursor:not-allowed; }
+  .result-card{ display:none; margin-top:22px; border-radius:14px; padding:20px 22px; }
+  .result-card.open{ display:block; }
+  .result-card.level-positive{ background:var(--teal); color:#fff; }
+  .result-card.level-watch{ background:var(--yellow); color:var(--ink); }
+  .result-card.level-urgent{ background:var(--coral); color:#fff; }
+  .result-card.level-data{ background:var(--sky); color:#fff; }
+  .result-card h3{ font-family:'Space Grotesk'; font-size:17px; margin:0 0 8px; }
+  .result-card p{ margin:0 0 12px; font-weight:600; line-height:1.55; font-size:13.5px; }
+  .result-card ul{ margin:0 0 14px; padding-left:19px; }
+  .result-card li{ font-weight:600; font-size:13px; margin-bottom:5px; }
+  .result-disclaimer{ font-size:11.5px; font-weight:700; opacity:0.9; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.4); }
+  .save-log-btn{ font-family:'Inter'; font-weight:800; font-size:12.5px; background:rgba(255,255,255,0.9); color:var(--ink); border:none; border-radius:8px; padding:8px 13px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="ws-root">
+
+  <div class="ws-topbar">
+    <div class="ws-brand">
+      <h1>New Teacher Exchange</h1>
+      <p>Strategies, Systems &amp; Support · For Early-Career Teachers</p>
+    </div>
+    <div class="ws-nav" role="tablist">
+      <button class="ws-tab" id="tab-workshop" role="tab" aria-selected="true">Workshop</button>
+      <button class="ws-tab" id="tab-docs" role="tab" aria-selected="false">Documentation Organizer</button>
+      <button class="ws-tab" id="tab-plan" role="tab" aria-selected="false">Intervention Planner</button>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- WORKSHOP VIEW -->
+    <section id="view-workshop">
+      <div class="intro-card">
+        <p class="eyebrow">60-minute peer workshop · Any group size</p>
+        <h2>Before you begin</h2>
+        <p>This session is built on a simple premise: the person sitting next to you has already solved a problem you're facing. Every activity below is a structured way to trade real, usable strategies — not just vent about a hard week.</p>
+        <div class="intro-meta">
+          <span class="meta-pill">⏱ 60 min</span>
+          <span class="meta-pill">👥 Works solo-pairs-groups of 4</span>
+          <span class="meta-pill">🎯 4 rounds</span>
+        </div>
+        <button class="fac-toggle" id="fac-toggle">Facilitator notes ▾</button>
+        <div class="fac-note" id="fac-note">
+          <strong>Setup:</strong> 5 labeled stations for the Strategy Swap Board (Classroom Management, Grading &amp; Feedback, Family Communication, Documentation, Intervention &amp; Support), sticky notes, chart paper, a visible clock or this page's timers projected.<br><br>
+          <strong>Tip:</strong> In the Case Clinic, hold the group to questions-only before advice — most first-year teachers jump straight to fixing, and the questioning phase is where the real thinking happens.
+        </div>
+      </div>
+      <div class="segment-track" id="segment-track"></div>
+    </section>
+
+    <!-- DOCUMENTATION ORGANIZER -->
+    <section id="view-docs" class="hidden">
+      <div class="intro-card">
+        <p class="eyebrow">Personal reference &amp; log</p>
+        <h2>Keep the paperwork from piling up</h2>
+        <p>Six categories most new teachers are expected to keep records of. Open any category for a quick habit checklist, and log entries as they happen so you're never reconstructing a timeline from memory later.</p>
+      </div>
+      <div class="doc-grid" id="doc-grid"></div>
+      <p class="storage-note">Entries are saved privately to this browser only — treat this as a personal working log, not your school's official system of record.</p>
+    </section>
+
+    <!-- INTERVENTION PLANNER -->
+    <section id="view-plan" class="hidden">
+      <div class="intro-card">
+        <p class="eyebrow">MTSS / RTI thinking tool</p>
+        <h2>Organize your next step</h2>
+        <p>Answer four quick questions about a student's response to a current intervention. You'll get a suggested next step and a set of prep notes to bring to your student support team — this tool helps you think it through, it doesn't replace your team's decision.</p>
+      </div>
+      <div class="planner-card">
+        <label class="field-label" for="student-name">Student (name or initials — optional)</label>
+        <input class="student-input" id="student-name" placeholder="e.g. J.T. or leave blank">
+
+        <div class="q-block">
+          <p class="q-title">1. What tier is the student currently receiving support at?</p>
+          <div class="opt-row" data-q="tier">
+            <button class="opt-btn" data-val="Tier 1">Tier 1 — core instruction</button>
+            <button class="opt-btn" data-val="Tier 2">Tier 2 — targeted small group</button>
+            <button class="opt-btn" data-val="Tier 3">Tier 3 — intensive individual</button>
+          </div>
+        </div>
+        <div class="q-block">
+          <p class="q-title">2. How long has this specific intervention been in place?</p>
+          <div class="opt-row" data-q="duration">
+            <button class="opt-btn" data-val="< 2 weeks">Less than 2 weeks</button>
+            <button class="opt-btn" data-val="2–6 weeks">2–6 weeks</button>
+            <button class="opt-btn" data-val="6+ weeks">6+ weeks</button>
+          </div>
+        </div>
+        <div class="q-block">
+          <p class="q-title">3. How many data points have you collected on this skill or behavior?</p>
+          <div class="opt-row" data-q="datapoints">
+            <button class="opt-btn" data-val="0-2">0–2</button>
+            <button class="opt-btn" data-val="3-5">3–5</button>
+            <button class="opt-btn" data-val="6+">6 or more</button>
+          </div>
+        </div>
+        <div class="q-block">
+          <p class="q-title">4. Based on your data, how is the student responding?</p>
+          <div class="opt-row" data-q="response">
+            <button class="opt-btn" data-val="strong">Strong progress toward the goal</button>
+            <button class="opt-btn" data-val="partial">Some progress, not yet at goal</button>
+            <button class="opt-btn" data-val="little">Little to no progress</button>
+            <button class="opt-btn" data-val="regression">Regression / getting worse</button>
+          </div>
+        </div>
+
+        <button class="planner-cta" id="planner-submit" disabled>Get suggested next step</button>
+
+        <div class="result-card" id="result-card">
+          <h3 id="result-title"></h3>
+          <p id="result-text"></p>
+          <p style="font-weight:800; margin-bottom:6px;">Prep notes for your team meeting:</p>
+          <ul id="result-notes"></ul>
+          <button class="save-log-btn" id="save-log-btn">Save to Intervention Log</button>
+          <p class="result-disclaimer">This suggestion is a starting point for your own thinking and team conversation, not a formal MTSS/RTI or special education determination.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  /* ============ TABS ============ */
+  const tabs = { workshop: document.getElementById('tab-workshop'), docs: document.getElementById('tab-docs'), plan: document.getElementById('tab-plan') };
+  const views = { workshop: document.getElementById('view-workshop'), docs: document.getElementById('view-docs'), plan: document.getElementById('view-plan') };
+  function switchTab(name){
+    Object.keys(tabs).forEach(k=>{
+      tabs[k].setAttribute('aria-selected', String(k===name));
+      views[k].classList.toggle('hidden', k!==name);
+    });
+    if(name==='docs') Object.keys(DOC_CATEGORIES).forEach(slug=>renderEntries(slug));
+  }
+  tabs.workshop.addEventListener('click', ()=>switchTab('workshop'));
+  tabs.docs.addEventListener('click', ()=>switchTab('docs'));
+  tabs.plan.addEventListener('click', ()=>switchTab('plan'));
+
+  document.getElementById('fac-toggle').addEventListener('click', ()=>{
+    document.getElementById('fac-note').classList.toggle('open');
+  });
+
+  /* ============ WORKSHOP SEGMENTS ============ */
+  const SEGMENTS = [
+    { color:'c-yellow', num:'Round 1 of 4', title:'Warm Round — Two-Minute Swap', duration:'10 min', seconds:600,
+      purpose:"Rotate partners quickly to normalize the hard parts of the job and surface what's already working, room-wide.",
+      steps:["Find a partner. You each get 60 seconds: share one thing that's working right now and one thing that's genuinely hard.",
+             "When the timer signals, rotate to a new partner. Repeat for the full round — aim for at least 4 different partners."] },
+    { color:'c-coral', num:'Round 2 of 4', title:'Strategy Swap Board', duration:'20 min', seconds:1200,
+      purpose:"Build a shared strategy bank across five common problem areas by physically posting and reading tips.",
+      steps:["Visit the five stations (Classroom Management, Grading &amp; Feedback, Family Communication, Documentation, Intervention &amp; Support).",
+             "At each station, post one sticky note with a specific tip or trick that's worked for you.",
+             "Read at least 3 other tips at each station before moving on."] },
+    { color:'c-teal', num:'Round 3 of 4', title:'Case Clinic', duration:'20 min', seconds:1200,
+      purpose:"Practice a structured peer-consultancy protocol: one real challenge, focused questions before any advice.",
+      steps:["In your group of 4, one person presents a real, current challenge in 2 minutes flat.",
+             "The group asks clarifying questions only for 3 minutes — no advice or solutions yet.",
+             "Group gives structured feedback for 5 minutes using \"I wonder if...\" framing.",
+             "Switch presenters if time allows and repeat."] },
+    { color:'c-violet', num:'Round 4 of 4', title:'Commit &amp; Track', duration:'10 min', seconds:600,
+      purpose:"Convert everything you heard today into one specific, trackable action.",
+      steps:["Choose ONE strategy you heard today — from any round — that you'll actually try.",
+             "Write a commitment card: what you'll try, when, and one signal that will tell you it worked.",
+             "Optional: trade cards with an accountability partner who'll check in with you in two weeks."] },
+  ];
+  const track = document.getElementById('segment-track');
+  SEGMENTS.forEach((seg,i)=>{
+    const card = document.createElement('div');
+    card.className = 'sticky-card ' + seg.color;
+    card.innerHTML = `
+      <div class="seg-head">
+        <div>
+          <div class="seg-num">${seg.num}</div>
+          <h3 class="seg-title">${seg.title}</h3>
+          <p class="seg-purpose">${seg.purpose}</p>
+        </div>
+        <div class="seg-dur">${seg.duration}</div>
+      </div>
+      <div class="seg-body">
+        <div>
+          <button class="steps-toggle" data-idx="${i}">Show steps ▾</button>
+          <ol class="steps-list" id="steps-${i}">${seg.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+        </div>
+        <div class="timer-widget" data-idx="${i}">
+          <div class="timer-ring-wrap">
+            <svg viewBox="0 0 120 120"><circle class="timer-track" cx="60" cy="60" r="52"></circle><circle class="timer-fill" cx="60" cy="60" r="52" id="ring-${i}"></circle></svg>
+            <div class="timer-time" id="time-${i}">${fmt(seg.seconds)}</div>
+          </div>
+          <div class="timer-btns">
+            <button class="timer-btn" data-action="start" data-idx="${i}">Start</button>
+            <button class="timer-btn" data-action="pause" data-idx="${i}">Pause</button>
+            <button class="timer-btn" data-action="reset" data-idx="${i}">Reset</button>
+          </div>
+          <div class="timer-done" id="done-${i}"></div>
+        </div>
+      </div>`;
+    track.appendChild(card);
+  });
+  function fmt(s){ const m=Math.floor(s/60), sec=s%60; return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); }
+  const RADIUS=52, CIRC=2*Math.PI*RADIUS;
+  document.querySelectorAll('.timer-fill').forEach(r=>{ r.style.strokeDasharray=CIRC; r.style.strokeDashoffset=0; });
+  const timers = {};
+  SEGMENTS.forEach((seg,i)=>{ timers[i]={total:seg.seconds, remaining:seg.seconds, interval:null}; });
+  function updateRing(i){ const t=timers[i]; const frac=t.remaining/t.total; document.getElementById('ring-'+i).style.strokeDashoffset = CIRC*(1-frac); document.getElementById('time-'+i).textContent = fmt(t.remaining); }
+  track.addEventListener('click', (e)=>{
+    const st = e.target.closest('.steps-toggle');
+    if(st){ const idx=st.dataset.idx; const list=document.getElementById('steps-'+idx); const open=list.classList.toggle('open'); st.textContent = open?'Hide steps ▴':'Show steps ▾'; return; }
+    const tb = e.target.closest('.timer-btn');
+    if(tb){ const idx=tb.dataset.idx, action=tb.dataset.action;
+      if(action==='start'){ const t=timers[idx]; if(!t.interval){ document.getElementById('done-'+idx).textContent=''; t.interval=setInterval(()=>{ t.remaining--; if(t.remaining<=0){ t.remaining=0; updateRing(idx); clearInterval(t.interval); t.interval=null; document.getElementById('done-'+idx).textContent="Time's up"; return;} updateRing(idx); },1000);} }
+      if(action==='pause'){ const t=timers[idx]; if(t.interval){ clearInterval(t.interval); t.interval=null; } }
+      if(action==='reset'){ const t=timers[idx]; if(t.interval){clearInterval(t.interval); t.interval=null;} t.remaining=t.total; document.getElementById('done-'+idx).textContent=''; updateRing(idx); }
+    }
+  });
+
+  /* ============ DOCUMENTATION ORGANIZER ============ */
+  const DOC_CATEGORIES = {
+    'attendance-grading': { name:'Attendance &amp; Grading Records', color:'var(--yellow-d)', desc:"Daily attendance and up-to-date gradebook entries — the two records most frequently pulled for audits, report cards, and parent questions.",
+      habits:["Take attendance at the same point in every class period","Enter grades within a consistent window (e.g. within a week of collection)","Note any grade changes with a brief reason"] },
+    'behavior-incident': { name:'Behavior &amp; Incident Logs', color:'var(--coral-d)', desc:"A factual, dated record of behavior incidents and the response taken — protects you and gives the full picture if a pattern emerges later.",
+      habits:["Log the same day it happens, while details are fresh","Stick to observable facts, not interpretations of intent","Note who else was informed (family, admin, counselor)"] },
+    'family-communication': { name:'Parent/Guardian Communication Log', color:'var(--sky-d)', desc:"A record of outreach to families — calls, emails, notes home — so you can show effort and consistency, not just recall it.",
+      habits:["Log date, method, and a one-line summary for every contact","Save a copy of written communication where possible","Note if a response is expected and follow up if it doesn't come"] },
+    'intervention-rti-mtss': { name:'Intervention / RTI-MTSS Log', color:'var(--teal-d)', desc:"Ongoing documentation of interventions tried, data collected, and student response — the evidence base for any tier change.",
+      habits:["Record data points on a consistent schedule, not just when convenient","Note the intervention exactly as delivered, including any adjustments","Date every entry — timelines matter for tier decisions"] },
+    'iep-504': { name:'IEP/504 Accommodation Notes', color:'var(--violet-d)', desc:"A working note of how accommodations are actually implemented day to day — separate from the formal plan itself, which lives with your case manager.",
+      habits:["Note which accommodations were used in which lesson","Flag anything that isn't working as written, and tell the case manager","Never store the formal IEP/504 document itself outside your school's system"] },
+    'pd-certification': { name:'Professional Development &amp; Certification Records', color:'var(--rose-d)', desc:"Proof of hours, trainings, and certification renewals — easy to forget until a deadline is suddenly close.",
+      habits:["Save certificates the same day you receive them","Track renewal deadlines somewhere with a reminder","Log informal PD too (peer observations, book studies) if your district counts it"] },
+  };
+
+  const docGrid = document.getElementById('doc-grid');
+  Object.keys(DOC_CATEGORIES).forEach(slug=>{
+    const cat = DOC_CATEGORIES[slug];
+    const card = document.createElement('div');
+    card.className = 'doc-card';
+    card.style.borderLeftColor = cat.color;
+    card.innerHTML = `
+      <h3>${cat.name}</h3>
+      <p class="doc-desc">${cat.desc}</p>
+      <ul class="doc-habits">${cat.habits.map(h=>`<li>${h}</li>`).join('')}</ul>
+      <button class="doc-log-toggle" data-slug="${slug}">Open log</button>
+      <div class="doc-log" id="log-${slug}">
+        <div class="doc-form">
+          <input type="date" id="date-${slug}">
+          <input type="text" id="topic-${slug}" placeholder="Student / topic (optional)">
+          <textarea id="note-${slug}" placeholder="Note..."></textarea>
+          <button class="doc-add-btn" data-slug="${slug}">Add entry</button>
+        </div>
+        <ul class="entry-list" id="entries-${slug}"></ul>
+      </div>`;
+    docGrid.appendChild(card);
+  });
+
+  docGrid.addEventListener('click', (e)=>{
+    const t = e.target.closest('.doc-log-toggle');
+    if(t){ const slug=t.dataset.slug; const el=document.getElementById('log-'+slug); const open=el.classList.toggle('open'); t.textContent = open?'Close log':'Open log'; if(open) renderEntries(slug); return; }
+    const a = e.target.closest('.doc-add-btn');
+    if(a){ const slug=a.dataset.slug; addEntry(slug); }
+  });
+
+  async function addEntry(slug, override){
+    const dateEl = document.getElementById('date-'+slug);
+    const topicEl = document.getElementById('topic-'+slug);
+    const noteEl = document.getElementById('note-'+slug);
+    const entry = override || {
+      date: dateEl.value || new Date().toISOString().slice(0,10),
+      topic: topicEl.value.trim(),
+      note: noteEl.value.trim(),
+    };
+    if(!entry.note) return;
+    try{
+      const key = 'doclog:'+slug;
+      let list = [];
+      try{ const res = await window.storage.get(key, false); if(res && res.value) list = JSON.parse(res.value); }catch(e){ /* no entries yet */ }
+      list.unshift(entry);
+      await window.storage.set(key, JSON.stringify(list), false);
+      if(dateEl){ dateEl.value=''; topicEl.value=''; noteEl.value=''; }
+      renderEntries(slug);
+    }catch(err){ console.error('Could not save entry', err); }
+  }
+
+  async function renderEntries(slug){
+    const listEl = document.getElementById('entries-'+slug);
+    if(!listEl) return;
+    let list = [];
+    try{ const res = await window.storage.get('doclog:'+slug, false); if(res && res.value) list = JSON.parse(res.value); }catch(e){ /* empty */ }
+    listEl.innerHTML = '';
+    if(list.length===0){ listEl.innerHTML = '<li class="entry-empty">No entries yet.</li>'; return; }
+    list.forEach(e=>{
+      const li = document.createElement('li');
+      li.className = 'entry-item';
+      li.innerHTML = `<span class="entry-date">${escapeHtml(e.date||'')}</span><span class="entry-body">${e.topic?`<strong>${escapeHtml(e.topic)}</strong>`:''}${escapeHtml(e.note||'')}</span>`;
+      listEl.appendChild(li);
+    });
+  }
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  /* ============ INTERVENTION PLANNER ============ */
+  const answers = {};
+  document.querySelectorAll('.opt-row').forEach(row=>{
+    row.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.opt-btn');
+      if(!btn) return;
+      const q = row.dataset.q;
+      [...row.children].forEach(b=>b.setAttribute('aria-pressed','false'));
+      btn.setAttribute('aria-pressed','true');
+      answers[q] = btn.dataset.val;
+      const submit = document.getElementById('planner-submit');
+      submit.disabled = !(answers.tier && answers.duration && answers.datapoints && answers.response);
+    });
+  });
+
+  document.getElementById('planner-submit').addEventListener('click', ()=>{
+    const rec = computeRecommendation(answers);
+    const card = document.getElementById('result-card');
+    card.className = 'result-card open level-' + rec.level;
+    document.getElementById('result-title').textContent = rec.title;
+    document.getElementById('result-text').textContent = rec.text;
+    const notesEl = document.getElementById('result-notes');
+    notesEl.innerHTML = rec.notes.map(n=>`<li>${n}</li>`).join('');
+    card.scrollIntoView({behavior:'smooth', block:'nearest'});
+    card.dataset.title = rec.title;
+    card.dataset.text = rec.text;
+  });
+
+  function computeRecommendation(a){
+    const lowData = a.datapoints === '0-2';
+    const tooEarly = a.duration === '< 2 weeks';
+    if(a.response === 'regression'){
+      return {
+        level:'urgent', title:'Flag this for your team now',
+        text:"Regression is worth raising promptly rather than waiting for a scheduled check-in, even if your data set is still small.",
+        notes:[`Tier: ${a.tier}`, `Intervention duration: ${a.duration}`, `Data points collected: ${a.datapoints}`, 'Bring your most recent data points and a clear description of what "getting worse" looks like.']
+      };
+    }
+    if(lowData || tooEarly){
+      return {
+        level:'data', title:'Collect a bit more data before deciding',
+        text:"Most MTSS frameworks call for at least 3–6 data points and roughly 6–8 weeks of consistent implementation before judging a tier's effectiveness. It's early to change course yet.",
+        notes:[`Tier: ${a.tier}`, `Intervention duration: ${a.duration}`, `Data points collected: ${a.datapoints}`, 'Set a specific progress-monitoring schedule (e.g. twice weekly) and revisit this planner once you have more points.']
+      };
+    }
+    if(a.response === 'strong'){
+      return {
+        level:'positive', title:'Response is positive — stay the course',
+        text:"The data supports continuing this tier. Start thinking about a plan to gradually fade support rather than an abrupt stop.",
+        notes:[`Tier: ${a.tier}`, `Response: strong progress toward goal`, 'Document the growth trend for your files.', 'Discuss a fading timeline with your team if progress continues.']
+      };
+    }
+    if(a.response === 'partial'){
+      return {
+        level:'watch', title:'Partial response — adjust before escalating',
+        text:"There's movement, just not enough yet. Try adjusting frequency, intensity, or strategy within the current tier before considering a tier change.",
+        notes:[`Tier: ${a.tier}`, `Response: some progress, not yet at goal`, 'Note exactly what you plan to adjust and when you\'ll reassess (2–3 weeks is typical).', 'Keep collecting data on the same schedule so the comparison is fair.']
+      };
+    }
+    // little to no progress, adequate time/data
+    return {
+      level:'urgent', title:'Bring this to your student support team',
+      text:"With adequate time and data points showing little to no progress, the current tier may not be sufficient. This is a good case to bring to your team for a tier or support change.",
+      notes:[`Tier: ${a.tier}`, `Intervention duration: ${a.duration}`, `Data points collected: ${a.datapoints}`, 'Bring your full data set and a summary of what was tried and how consistently it was implemented.']
+    };
+  }
+
+  document.getElementById('save-log-btn').addEventListener('click', ()=>{
+    const card = document.getElementById('result-card');
+    const student = document.getElementById('student-name').value.trim();
+    const summary = `[Planner] ${card.dataset.title}. ${card.dataset.text} (Tier: ${answers.tier}, Duration: ${answers.duration}, Data points: ${answers.datapoints}, Response: ${answers.response})`;
+    addEntry('intervention-rti-mtss', { date: new Date().toISOString().slice(0,10), topic: student, note: summary });
+    const btn = document.getElementById('save-log-btn');
+    const original = btn.textContent;
+    btn.textContent = 'Saved to Intervention Log ✓';
+    setTimeout(()=>{ btn.textContent = original; }, 2200);
+  });
+
+})();
+</script>
+</body>
+</html>
